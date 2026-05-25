@@ -362,7 +362,7 @@ st.markdown("""
     <div class='header-badge'>🫀</div>
     <div>
         <p class='header-title'>Cardiac Risk Assessment</p>
-        <p class='header-subtitle'>Multi-class predictive model · Cleveland Heart Disease dataset · XGBoost + SHAP</p>
+        <p class='header-subtitle'>Multi-class predictive model · Cleveland Heart Disease dataset · FastAPI + Streamlit</p>
     </div>
     <div class='header-disclaimer'>
         ⚠ For clinical decision support only.<br>Not a substitute for physician judgement.
