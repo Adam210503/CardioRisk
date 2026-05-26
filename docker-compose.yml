@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # FastAPI backend service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - ENV=production
+      - MODEL_PATH=optimized_heart_disease_model.pkl
+
+  # Streamlit UI service
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend

@@ -587,7 +587,8 @@ else:
 # ─────────────────────────────────────────────
 # Inference via FastAPI Backend Connection
 # ─────────────────────────────────────────────
-# Create a standard python dictionary matching our FastAPI Pydantic gatekeeper
+BACKEND_URL = "http://backend:8000/predict"
+
 payload = {
     "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
     "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
@@ -596,14 +597,12 @@ payload = {
 
 if analyse:
     try:
-        # Shoot the payload across localhost to Port 8000
-        response = requests.post("http://127.0.0.1:8000/predict", json=payload)
+        response = requests.post(BACKEND_URL, json=payload)
         result = response.json()
         
-        # Extract the values sent back by FastAPI
         prediction = result["severity_class"]
         probabilities = np.array(result["probabilities"])
         max_prob = probabilities[prediction]
         
     except requests.exceptions.ConnectionError:
-        st.error("🚨 Frontend-Backend Disconnect! Make sure your FastAPI server is running in your other terminal tab using `uvicorn main:app --reload`.")
+        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
