@@ -290,8 +290,6 @@ div[data-testid="stButton"] > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-
-
 # ─────────────────────────────────────────────
 # Sidebar — clinical inputs
 # ─────────────────────────────────────────────
@@ -339,7 +337,6 @@ with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     analyse = st.button("Analyse Cardiac Risk Profile", type="primary")
 
-
 # ─────────────────────────────────────────────
 # Header
 # ─────────────────────────────────────────────
@@ -355,7 +352,6 @@ st.markdown("""
     </div>
 </div>
 """, unsafe_allow_html=True)
-
 
 # ─────────────────────────────────────────────
 # Patient snapshot (always visible)
@@ -395,204 +391,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-
 # ─────────────────────────────────────────────
-# Inference + results
+# Inference + results (Optimized Single Endpoint Handler)
 # ─────────────────────────────────────────────
-BACKEND_URL = "http://backend:8000/predict"
-
-input_data = pd.DataFrame(
-    [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]],
-    columns=['age','sex','cp','trestbps','chol','fbs','restecg','thalach','exang','oldpeak','slope','ca','thal']
-)
-
-if analyse:
-    # Package the raw inputs into a clean JSON payload for the network call
-    payload = {
-        "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
-        "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
-        "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
-    }
-    
-    try:
-        # Route the request to the containerized FastAPI service instead of evaluating locally
-        response = requests.post(BACKEND_URL, json=payload)
-        result = response.json()
-        
-        # Populate variables from the backend API response layer
-        prediction = result["severity_class"]
-        probabilities = np.array(result["probabilities"])
-        max_prob = probabilities[prediction]
-        
-    except requests.exceptions.ConnectionError:
-        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
-        st.stop()
-
-    col_result, col_detail = st.columns([1, 1], gap="large")
-
-    # ── Left: risk verdict ──
-    with col_result:
-        if prediction == 0:
-            css_cls   = "result-low"
-            tier_css  = "tier-low"
-            tier_txt  = "Low Risk"
-            headline  = "No significant cardiac disease detected"
-            body      = ("The patient's current clinical profile does not indicate structural "
-                         "heart disease. Routine monitoring and preventive care are advised. "
-                         "Re-assess if symptoms develop.")
-        elif prediction in [1, 2]:
-            css_cls   = "result-medium"
-            tier_css  = "tier-medium"
-            tier_txt  = f"Medium Risk — Severity Class {prediction}"
-            headline  = "Mild to moderate coronary narrowing possible"
-            body      = ("The model identifies features consistent with early-to-moderate "
-                         "arterial disease. Further non-invasive testing (stress echo, CT angiography) "
-                         "is clinically recommended before any intervention.")
-        else:
-            css_cls   = "result-high"
-            tier_css  = "tier-high"
-            tier_txt  = f"High Risk — Severity Class {prediction}"
-            headline  = "Significant multi-vessel disease highly probable"
-            body      = ("The model flags a high-severity profile. The patient's haemodynamic "
-                         "and structural indicators are consistent with critical coronary artery disease. "
-                         "Urgent cardiology referral and invasive assessment are strongly indicated.")
-
-        st.markdown(f"""
-        <div class='result-wrapper {css_cls}'>
-            <div class='result-tier {tier_css}'>{tier_txt}</div>
-            <div class='result-headline'>{headline}</div>
-            <div class='result-body'>{body}</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Confidence
-        st.markdown(f"""
-        <div style='font-size:12px; color:#64748b; margin-top:-8px; margin-bottom:16px;'>
-            Model confidence: <strong style='color:#0f172a; font-family:DM Mono,monospace;'>{max_prob:.1%}</strong>
-            &nbsp;·&nbsp; Predicted severity class: <strong style='color:#0f172a; font-family:DM Mono,monospace;'>{prediction}</strong>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Clinical flags
-        st.markdown("<div class='section-label'>Clinical Flags</div>", unsafe_allow_html=True)
-        flags = [
-            ("Chest pain type", cp_labels[cp], cp in [3, 4]),
-            ("Hypertension",    f"{trestbps} mmHg", trestbps >= 140),
-            ("Hypercholesterolaemia", f"{chol} mg/dL", chol >= 240),
-            ("Fasting glucose", "Elevated" if fbs else "Normal", fbs == 1),
-            ("Exercise angina", "Present" if exang else "Absent", exang == 1),
-            ("ST depression",   f"{oldpeak}", oldpeak >= 2.0),
-        ]
-        flag_html = "<div class='flag-grid'>"
-        for label, val, is_risk in flags:
-            dot_cls = "risk" if is_risk else "normal"
-            flag_html += f"""
-            <div class='flag-item'>
-                <div class='flag-dot {dot_cls}'></div>
-                <div>
-                    <div style='font-weight:500; color:#334155;'>{label}</div>
-                    <div style='color:#94a3b8; font-size:11px;'>{val}</div>
-                </div>
-            </div>"""
-        flag_html += "</div>"
-        st.markdown(flag_html, unsafe_allow_html=True)
-
-    # ── Right: probability breakdown ──
-    with col_detail:
-        st.markdown("<div class='section-label'>Class Probability Distribution</div>", unsafe_allow_html=True)
-
-        severity_labels = {
-            0: "No disease",
-            1: "Mild narrowing",
-            2: "Moderate narrowing",
-            3: "Severe disease",
-            4: "Critical disease",
-        }
-
-        rows = ""
-        for i, prob in enumerate(probabilities):
-            bar_pct   = prob * 100
-            active    = "active" if i == prediction else ""
-            rows += f"""
-            <tr>
-                <td style='color:#64748b; font-family: DM Sans, sans-serif; font-size:12px;'>
-                    Class {i}<br>
-                    <span style='color:#94a3b8; font-size:10px;'>{severity_labels[i]}</span>
-                </td>
-                <td>
-                    <div class='prob-bar-bg'>
-                        <div class='prob-bar-fill {active}' style='width:{bar_pct:.1f}%'></div>
-                    </div>
-                </td>
-                <td style='text-align:right; color:{"#be123c" if i==prediction else "#334155"};
-                           font-weight:{"600" if i==prediction else "400"};'>
-                    {prob:.1%}
-                </td>
-            </tr>"""
-
-        st.markdown(f"""
-        <table class='prob-table'>
-            <thead><tr>
-                <th>Severity</th><th style='width:55%'>Probability</th><th>Score</th>
-            </tr></thead>
-            <tbody>{rows}</tbody>
-        </table>
-        """, unsafe_allow_html=True)
-
-        # Structural indicators summary
-        st.markdown("<br><div class='section-label'>Structural Indicators</div>", unsafe_allow_html=True)
-        thal_labels = {3:"Normal", 6:"Fixed Defect", 7:"Reversible Defect"}
-        slope_labels = {1:"Upsloping", 2:"Flat", 3:"Downsloping"}
-        struct_flags = [
-            ("Vessels (fluoroscopy)", f"{ca} vessel{'s' if ca != 1 else ''}", ca >= 2),
-            ("Thalassemia",           thal_labels[thal], thal == 7),
-            ("ST slope",              slope_labels[slope], slope in [2, 3]),
-            ("Resting ECG",           ecg_labels[restecg], restecg != 0),
-        ]
-        sf_html = "<div class='flag-grid'>"
-        for label, val, is_risk in struct_flags:
-            dot_cls = "risk" if is_risk else "normal"
-            sf_html += f"""
-            <div class='flag-item'>
-                <div class='flag-dot {dot_cls}'></div>
-                <div>
-                    <div style='font-weight:500; color:#334155;'>{label}</div>
-                    <div style='color:#94a3b8; font-size:11px;'>{val}</div>
-                </div>
-            </div>"""
-        sf_html += "</div>"
-        st.markdown(sf_html, unsafe_allow_html=True)
-
-        # Raw data expander
-        with st.expander("View raw input vector"):
-            st.dataframe(input_data.T.rename(columns={0: "Value"}), use_container_width=True)
-
-else:
-    # Pre-analysis placeholder
-    st.markdown("""
-    <div style='
-        text-align:center;
-        padding: 60px 20px;
-        background: #f8fafc;
-        border: 1px dashed #cbd5e1;
-        border-radius: 12px;
-        color: #94a3b8;
-    '>
-        <div style='font-size:36px; margin-bottom:12px;'>🫀</div>
-        <div style='font-size:15px; font-weight:500; color:#64748b; margin-bottom:6px;'>
-            Awaiting analysis
-        </div>
-        <div style='font-size:13px;'>
-            Configure the patient's clinical metrics in the sidebar,<br>
-            then click <strong style='color:#1d4ed8;'>Analyse Cardiac Risk Profile</strong>.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# Inference + results
-# ─────────────────────────────────────────────
-# Hardcoded to localhost for local Docker work; falls back gracefully on HTTPS Cloud
 BACKEND_URL = "http://localhost:8000/predict"
 
 input_data = pd.DataFrame(
