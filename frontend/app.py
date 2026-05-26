@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import requests
 import joblib
+import os
 
 # ─────────────────────────────────────────────
 # Page config — must be first Streamlit call
@@ -408,7 +409,8 @@ st.markdown(f"""
 # ─────────────────────────────────────────────
 # Inference Execution Logic Block
 # ─────────────────────────────────────────────
-BACKEND_URL = "http://localhost:8000/predict"
+DOCKER_BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = f"{DOCKER_BACKEND_URL}/predict"
 
 # Construct core DataFrame containing names matching original training schema exactly
 input_data = pd.DataFrame(
