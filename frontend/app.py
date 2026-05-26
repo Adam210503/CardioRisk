@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
 import requests
 
 # ─────────────────────────────────────────────
@@ -291,19 +290,6 @@ div[data-testid="stButton"] > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-
-# ─────────────────────────────────────────────
-# Model loader
-# ─────────────────────────────────────────────
-@st.cache_resource
-def load_model():
-    return joblib.load('optimized_heart_disease_model.pkl')
-
-try:
-    model = load_model()
-except FileNotFoundError:
-    st.error("Model file not found. Run `python3 train_model.py` first.")
-    st.stop()
 
 
 # ─────────────────────────────────────────────
@@ -609,44 +595,40 @@ else:
 # Backend API URL
 BACKEND_URL = "http://localhost:8000/predict"
 
-if st.button("Analyse Cardiac Risk Profile"):
-    try:
-        # Try to call your local FastAPI backend
-        response = requests.post(BACKEND_URL, json=patient_payload, timeout=2)
-        predictions = response.json()
-        st.success("Connected to live FastAPI backend container!")
-        
-    except requests.exceptions.ConnectionError:
-        # FALLBACK: Keep the cloud prototype functional when backend is offline
-        st.warning("⚠️ Backend container offline. Running in Demo Mode with pre-loaded model weights.")
-        
-        # Mock data matches your multi-class prediction format
-        predictions = {
-            "class_probabilities": {
-                "Class 0 (No disease)": 0.302,
-                "Class 1 (Mild)": 0.095,
-                "Class 2 (Moderate)": 0.163,
-                "Class 3 (Severe)": 0.414,
-                "Class 4 (Critical)": 0.027
-            },
-            "predicted_class": 3,
-            "confidence": 0.414
-        }
-
+# Construct the payload matching your FastAPI validation schema
 payload = {
-    "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
-    "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
-    "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
+    "age": float(age), 
+    "sex": float(sex), 
+    "cp": float(cp), 
+    "trestbps": float(trestbps),
+    "chol": float(chol), 
+    "fbs": float(fbs), 
+    "restecg": float(restecg), 
+    "thalach": float(thalach),
+    "exang": float(exang), 
+    "oldpeak": float(oldpeak), 
+    "slope": float(slope), 
+    "ca": float(ca), 
+    "thal": float(thal)
 }
 
 if analyse:
     try:
-        response = requests.post(BACKEND_URL, json=payload)
+        # Route the request to the containerized FastAPI service instead of evaluating locally
+        response = requests.post(BACKEND_URL, json=payload, timeout=2)
         result = response.json()
         
+        # Populate variables from the backend API response layer
         prediction = result["severity_class"]
         probabilities = np.array(result["probabilities"])
         max_prob = probabilities[prediction]
+        st.success("Connected to live FastAPI backend container!")
         
     except requests.exceptions.ConnectionError:
-        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
+        # FALLBACK: Keep the cloud prototype functional when backend is offline
+        st.warning("⚠️ Backend container offline. Running in Demo Mode with pre-loaded simulation metrics.")
+        
+        # Mock data matches your multi-class prediction and response schema format
+        prediction = 3  # Severe disease index
+        probabilities = np.array([0.302, 0.095, 0.163, 0.414, 0.027])
+        max_prob = 0.414
