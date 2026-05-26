@@ -202,7 +202,20 @@ To install all dependencies into your local virtual environment simultaneously, 
 pip install -r requirements.txt
 
 ---
+## Containerized Local Development Workflow
 
+The application is fully containerized and orchestrated using Docker and Docker Compose, eliminating the need for manual, multi-terminal service instantiation.
+
+### Prerequisites
+* Ensure [Docker Desktop](https://www.docker.com/products/docker-desktop/) is installed and initialized on the host machine.
+
+### Execution
+To build the target images, configure the isolated multi-container network infrastructure, and initialize both services simultaneously, run the following command from the project root:
+
+```bash
+docker-compose up --build
+
+---
 ## Limitations & Model Card
 
 This project is built for **portfolio and educational purposes**. It should not be used for actual clinical decision-making.
