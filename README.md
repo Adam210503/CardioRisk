@@ -192,21 +192,14 @@ Accepts a JSON patient record and returns the predicted severity class and class
 
 ---
 
-## Requirements
+## 📦 System Requirements & Dependencies
 
-```
-streamlit
-fastapi
-uvicorn
-scikit-learn
-imbalanced-learn
-pandas
-numpy
-joblib
-requests
-```
+All core libraries and versions required to build the ML pipeline, launch the FastAPI gateway, and serve the Streamlit UI dashboard are isolated inside the main `requirements.txt` configuration file.
 
-> Pin versions in `requirements.txt` before deployment. Run `pip freeze > requirements.txt` after confirming the training script completes successfully.
+To install all dependencies into your local virtual environment simultaneously, run:
+
+```bash
+pip install -r requirements.txt
 
 ---
 
