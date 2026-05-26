@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
 import requests
 
 # ─────────────────────────────────────────────
@@ -291,19 +290,6 @@ div[data-testid="stButton"] > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-
-# ─────────────────────────────────────────────
-# Model loader
-# ─────────────────────────────────────────────
-@st.cache_resource
-def load_model():
-    return joblib.load('optimized_heart_disease_model.pkl')
-
-try:
-    model = load_model()
-except FileNotFoundError:
-    st.error("Model file not found. Run `python3 train_model.py` first.")
-    st.stop()
 
 
 # ─────────────────────────────────────────────
