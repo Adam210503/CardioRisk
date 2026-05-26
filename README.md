@@ -127,7 +127,7 @@ cardiorisk/
 ### Installation
 
 ```bash
-git clone https://github.com/<Adam210503>/cardiorisk.git
+git clone https://github.com/Adam210503/CardioRisk.git
 cd cardiorisk
 pip install -r backend/requirements.txt
 pip install -r frontend/requirements.txt
