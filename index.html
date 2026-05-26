@@ -1,66 +1,164 @@
-<div style="padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 16px;">
-  <div style="background: #0d1117; border-radius: 16px; padding: 28px 28px 22px; border: 1px solid #21262d; width: 100%; max-width: 640px; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif;">
 
+<div style="padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+
+  <div style="
+    background: #0d1117;
+    border-radius: 16px;
+    padding: 28px 28px 22px;
+    border: 1px solid #21262d;
+    width: 100%;
+    max-width: 640px;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
+  ">
+
+    <!-- Header -->
     <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px;">
       <div style="display: flex; align-items: center; gap: 12px;">
         <div style="background: #161b22; border: 1px solid #30363d; border-radius: 10px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="ti ti-activity" style="font-size: 22px; color: #58a6ff;" aria-hidden="true"></i>
+          <i class="ti ti-heart-rate-monitor" style="font-size: 22px; color: #58a6ff;" aria-hidden="true"></i>
         </div>
         <div>
           <div style="font-size: 18px; font-weight: 600; color: #e6edf3; letter-spacing: -0.02em; line-height: 1.2;">CardioRisk</div>
           <div style="font-size: 12px; color: #8b949e; margin-top: 2px;">Predictive cardiac disease severity assessment</div>
         </div>
       </div>
-      <span style="background: #0d2818; border: 1px solid #238636; border-radius: 99px; padding: 4px 12px; font-size: 11px; font-weight: 500; color: #3fb950; display: flex; align-items: center; gap: 5px;">
-        <span style="width: 6px; height: 6px; border-radius: 50%; background: #3fb950;"></span> Live
+      <span style="background: #0d2818; border: 1px solid #238636; border-radius: 99px; padding: 4px 12px; font-size: 11px; font-weight: 500; color: #3fb950; white-space: nowrap; display: flex; align-items: center; gap: 5px;">
+        <span style="width: 6px; height: 6px; border-radius: 50%; background: #3fb950; display: inline-block;"></span>
+        Live
       </span>
     </div>
 
+    <!-- Metrics grid -->
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
       <div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 14px 10px; text-align: center;">
-        <div style="font-size: 22px; font-weight: 600; color: #79c0ff; font-family: monospace;">89%</div>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase;">Macro F1</div>
+        <div style="font-size: 22px; font-weight: 600; color: #79c0ff; font-family: monospace; letter-spacing: -0.03em;">89%</div>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.07em; line-height: 1.4;">Macro<br>F1-Score</div>
       </div>
       <div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 14px 10px; text-align: center;">
-        <div style="font-size: 22px; font-weight: 600; color: #d2a8ff; font-family: monospace;">5</div>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase;">Classes</div>
+        <div style="font-size: 22px; font-weight: 600; color: #d2a8ff; font-family: monospace; letter-spacing: -0.03em;">5</div>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.07em; line-height: 1.4;">Severity<br>Classes</div>
       </div>
       <div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 14px 10px; text-align: center;">
-        <div style="font-size: 22px; font-weight: 600; color: #56d364; font-family: monospace;">13</div>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase;">Features</div>
+        <div style="font-size: 22px; font-weight: 600; color: #56d364; font-family: monospace; letter-spacing: -0.03em;">13</div>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.07em; line-height: 1.4;">Clinical<br>Features</div>
       </div>
       <div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 14px 10px; text-align: center;">
-        <div style="font-size: 22px; font-weight: 600; color: #ffa657; font-family: monospace;">4</div>
-        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase;">Models</div>
+        <div style="font-size: 22px; font-weight: 600; color: #ffa657; font-family: monospace; letter-spacing: -0.03em;">4</div>
+        <div style="font-size: 10px; color: #8b949e; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.07em; line-height: 1.4;">Models<br>Compared</div>
       </div>
     </div>
 
-    <div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 18px; margin-bottom: 20px; font-family: monospace; display: flex; flex-direction: column; align-items: center;">
-      <div style="width: 100%; font-size: 10px; color: #8b949e; margin-bottom: 14px; font-family: sans-serif; text-align: left; text-transform: uppercase;">System Architecture</div>
+    <!-- Architecture diagram -->
+    <div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 18px; margin-bottom: 20px; font-family: 'SF Mono', 'Fira Code', monospace;">
 
-      <div style="text-align: center; color: #c9d1d9; font-size: 11px;">
-        <div style="color: #3fb950; margin-bottom: 4px;">[ LAYER 1: DATA PIPELINE ]</div>
-        UCI Dataset → SMOTE → CalibratedCV → .pkl
+      <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #8b949e; margin-bottom: 14px; font-family: system-ui, sans-serif;">System architecture</div>
+
+      <!-- Layer 1 -->
+      <div style="margin-bottom: 4px;">
+        <span style="font-size: 10px; color: #3fb950; letter-spacing: 0.06em;">[ LAYER 1: DATA PIPELINE &amp; TRAINING ]</span>
+      </div>
+      <div style="font-size: 11px; color: #c9d1d9; display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin-bottom: 6px;">
+        <span style="color: #8b949e;">UCI Dataset</span>
+        <span style="color: #484f58;">—→</span>
+        <span style="color: #c9d1d9;">SMOTE <span style="color: #8b949e;">(k=2)</span></span>
+        <span style="color: #484f58;">—→</span>
+        <span style="color: #c9d1d9;">CalibratedCV</span>
+        <span style="color: #484f58;">—→</span>
+        <span style="color: #ffa657;">.pkl binary</span>
       </div>
 
-      <div style="width: 1px; height: 12px; background: #484f58; margin: 8px 0;"></div>
-
-      <div style="width: 100%; border: 1px solid #30363d; border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="text-align: center;"><div style="font-size: 10px; color: #8b949e;">UI</div><div style="color: #ff7b72; font-size: 12px;">Streamlit</div></div>
-        <div style="font-size: 10px; color: #8b949e;">bridge</div>
-        <div style="text-align: center;"><div style="font-size: 10px; color: #8b949e;">API</div><div style="color: #58a6ff; font-size: 12px;">FastAPI</div></div>
+      <!-- Connector down to layer 2 -->
+      <div style="display: flex; justify-content: flex-end; padding-right: 20px; margin-bottom: 2px;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 0;">
+          <div style="width: 1px; height: 10px; background: #484f58;"></div>
+          <div style="font-size: 9px; color: #484f58;">▼</div>
+        </div>
       </div>
 
-      <div style="display: flex; flex-direction: column; align-items: center; margin: 4px 0;">
+      <!-- Layer 2 -->
+      <div style="margin-bottom: 4px;">
+        <span style="font-size: 10px; color: #58a6ff; letter-spacing: 0.06em;">[ LAYER 2: DECOUPLED DEPLOYMENT — DOCKER COMPOSE ]</span>
+      </div>
+      <div style="border: 1px solid #30363d; border-radius: 8px; padding: 12px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+        <div style="background: #0d1117; border: 1px solid #21262d; border-radius: 6px; padding: 8px 14px; text-align: center; flex: 1;">
+          <div style="font-size: 10px; color: #8b949e; margin-bottom: 2px; letter-spacing: 0.04em;">Frontend container</div>
+          <div style="font-size: 12px; color: #ff7b72; font-weight: 600;">Streamlit UI</div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0;">
+          <div style="font-size: 9px; color: #8b949e; white-space: nowrap;">network bridge</div>
+          <div style="display: flex; align-items: center; gap: 2px;">
+            <div style="width: 24px; height: 1px; background: #484f58;"></div>
+            <span style="font-size: 9px; color: #484f58;">→</span>
+          </div>
+        </div>
+        <div style="background: #0d1117; border: 1px solid #21262d; border-radius: 6px; padding: 8px 14px; text-align: center; flex: 1;">
+          <div style="font-size: 10px; color: #8b949e; margin-bottom: 2px; letter-spacing: 0.04em;">Backend container</div>
+          <div style="font-size: 12px; color: #58a6ff; font-weight: 600;">FastAPI</div>
+        </div>
+      </div>
+
+      <!-- Connector down to layer 3 -->
+      <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 4px; gap: 1px;">
         <div style="width: 1px; height: 8px; background: #484f58;"></div>
-        <span style="font-size: 9px; color: #8b949e; font-family: sans-serif;">▼ fallback</span>
+        <span style="font-size: 9px; color: #8b949e; font-family: system-ui, sans-serif;">▼ if connection fails</span>
       </div>
 
-      <div style="text-align: center; color: #c9d1d9; font-size: 11px;">
-        <div style="color: #d2a8ff; margin-bottom: 4px;">[ LAYER 3: CLOUD FALLBACK ]</div>
-        Streamlit Cloud → Direct .pkl Inference
+      <!-- Layer 3 -->
+      <div style="margin-bottom: 4px;">
+        <span style="font-size: 10px; color: #d2a8ff; letter-spacing: 0.06em;">[ LAYER 3: CLOUD FALLBACK — STREAMLIT CLOUD ]</span>
       </div>
+      <div style="font-size: 11px; color: #c9d1d9; display: flex; align-items: center; flex-wrap: wrap; gap: 3px;">
+        <span style="color: #8b949e;">Streamlit Cloud runtime</span>
+        <span style="color: #484f58;">←—</span>
+        <span style="color: #c9d1d9;">Direct memory load</span>
+        <span style="color: #484f58;">←—</span>
+        <span style="color: #ffa657;">.pkl from GitHub</span>
+      </div>
+
     </div>
-    
+
+    <!-- Tech stack badges -->
+    <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px;">
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-brand-python" style="font-size: 13px; color: #79c0ff;" aria-hidden="true"></i>Python
+      </span>
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-chart-dots" style="font-size: 13px; color: #d2a8ff;" aria-hidden="true"></i>Scikit-learn
+      </span>
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-database" style="font-size: 13px; color: #56d364;" aria-hidden="true"></i>Pandas
+      </span>
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-refresh-dot" style="font-size: 13px; color: #ffa657;" aria-hidden="true"></i>SMOTE
+      </span>
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-adjustments" style="font-size: 13px; color: #79c0ff;" aria-hidden="true"></i>Calibration
+      </span>
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-shield-check" style="font-size: 13px; color: #58a6ff;" aria-hidden="true"></i>FastAPI
+      </span>
+      <span style="background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #c9d1d9; display: flex; align-items: center; gap: 5px;">
+        <i class="ti ti-brand-docker" style="font-size: 13px; color: #3fb950;" aria-hidden="true"></i>Docker
+      </span>
+    </div>
+
+    <!-- Footer -->
+    <div style="border-top: 1px solid #21262d; padding-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; gap: 14px;">
+        <a href="https://github.com/Adam210503/CardioRisk" style="font-size: 11px; color: #8b949e; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+          <i class="ti ti-brand-github" style="font-size: 14px;" aria-hidden="true"></i>
+          Adam210503/CardioRisk
+        </a>
+        <a href="https://cardiorisk-dashboard.streamlit.app/" style="font-size: 11px; color: #58a6ff; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+          <i class="ti ti-external-link" style="font-size: 14px;" aria-hidden="true"></i>
+          Live dashboard
+        </a>
+      </div>
+      <div style="font-size: 10px; color: #484f58; font-style: italic;">UCI Cleveland · Project 1 of 4</div>
+    </div>
+
   </div>
+
+
 </div>
