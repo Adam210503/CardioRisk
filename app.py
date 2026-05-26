@@ -413,15 +413,34 @@ st.markdown(f"""
 # ─────────────────────────────────────────────
 # Inference + results
 # ─────────────────────────────────────────────
+BACKEND_URL = "http://backend:8000/predict"
+
 input_data = pd.DataFrame(
     [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]],
     columns=['age','sex','cp','trestbps','chol','fbs','restecg','thalach','exang','oldpeak','slope','ca','thal']
 )
 
 if analyse:
-    prediction    = model.predict(input_data)[0]
-    probabilities = model.predict_proba(input_data)[0]
-    max_prob      = probabilities[prediction]
+    # Package the raw inputs into a clean JSON payload for the network call
+    payload = {
+        "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
+        "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
+        "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
+    }
+    
+    try:
+        # Route the request to the containerized FastAPI service instead of evaluating locally
+        response = requests.post(BACKEND_URL, json=payload)
+        result = response.json()
+        
+        # Populate variables from the backend API response layer
+        prediction = result["severity_class"]
+        probabilities = np.array(result["probabilities"])
+        max_prob = probabilities[prediction]
+        
+    except requests.exceptions.ConnectionError:
+        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
+        st.stop()
 
     col_result, col_detail = st.columns([1, 1], gap="large")
 
@@ -588,21 +607,3 @@ else:
 # Inference via FastAPI Backend Connection
 # ─────────────────────────────────────────────
 BACKEND_URL = "http://backend:8000/predict"
-
-payload = {
-    "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
-    "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
-    "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
-}
-
-if analyse:
-    try:
-        response = requests.post(BACKEND_URL, json=payload)
-        result = response.json()
-        
-        prediction = result["severity_class"]
-        probabilities = np.array(result["probabilities"])
-        max_prob = probabilities[prediction]
-        
-    except requests.exceptions.ConnectionError:
-        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
