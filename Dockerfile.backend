@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies if required, then Python requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend source code and serialized ML model pipeline
+COPY main.py .
+COPY optimized_heart_disease_model.pkl .
+
+# Expose internal API gateway port
+EXPOSE 8000
+
+# Bind Uvicorn to all network interfaces inside the container container
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

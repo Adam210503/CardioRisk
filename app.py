@@ -362,7 +362,7 @@ st.markdown("""
     <div class='header-badge'>🫀</div>
     <div>
         <p class='header-title'>Cardiac Risk Assessment</p>
-        <p class='header-subtitle'>Multi-class predictive model · Cleveland Heart Disease dataset · XGBoost + SHAP</p>
+        <p class='header-subtitle'>Multi-class predictive model · Cleveland Heart Disease dataset · FastAPI + Streamlit</p>
     </div>
     <div class='header-disclaimer'>
         ⚠ For clinical decision support only.<br>Not a substitute for physician judgement.
@@ -413,15 +413,34 @@ st.markdown(f"""
 # ─────────────────────────────────────────────
 # Inference + results
 # ─────────────────────────────────────────────
+BACKEND_URL = "http://backend:8000/predict"
+
 input_data = pd.DataFrame(
     [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]],
     columns=['age','sex','cp','trestbps','chol','fbs','restecg','thalach','exang','oldpeak','slope','ca','thal']
 )
 
 if analyse:
-    prediction    = model.predict(input_data)[0]
-    probabilities = model.predict_proba(input_data)[0]
-    max_prob      = probabilities[prediction]
+    # Package the raw inputs into a clean JSON payload for the network call
+    payload = {
+        "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
+        "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
+        "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
+    }
+    
+    try:
+        # Route the request to the containerized FastAPI service instead of evaluating locally
+        response = requests.post(BACKEND_URL, json=payload)
+        result = response.json()
+        
+        # Populate variables from the backend API response layer
+        prediction = result["severity_class"]
+        probabilities = np.array(result["probabilities"])
+        max_prob = probabilities[prediction]
+        
+    except requests.exceptions.ConnectionError:
+        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
+        st.stop()
 
     col_result, col_detail = st.columns([1, 1], gap="large")
 
@@ -587,23 +606,4 @@ else:
 # ─────────────────────────────────────────────
 # Inference via FastAPI Backend Connection
 # ─────────────────────────────────────────────
-# Create a standard python dictionary matching our FastAPI Pydantic gatekeeper
-payload = {
-    "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
-    "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
-    "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
-}
-
-if analyse:
-    try:
-        # Shoot the payload across localhost to Port 8000
-        response = requests.post("http://127.0.0.1:8000/predict", json=payload)
-        result = response.json()
-        
-        # Extract the values sent back by FastAPI
-        prediction = result["severity_class"]
-        probabilities = np.array(result["probabilities"])
-        max_prob = probabilities[prediction]
-        
-    except requests.exceptions.ConnectionError:
-        st.error("🚨 Frontend-Backend Disconnect! Make sure your FastAPI server is running in your other terminal tab using `uvicorn main:app --reload`.")
+BACKEND_URL = "http://backend:8000/predict"
