@@ -5,24 +5,25 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: backend/Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./backend/app:/app/app
+      - ./ml/models:/app/ml/models
     environment:
       - ENV=production
-      - MODEL_PATH=optimized_heart_disease_model.pkl
+      - MODEL_PATH=ml/models/optimized_heart_disease_model.pkl
 
   # Streamlit UI service
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: frontend/Dockerfile
     ports:
       - "8501:8501"
     volumes:
-      - .:/app
+      - ./frontend:/app
     environment:
       - BACKEND_URL=http://backend:8000
     depends_on:
