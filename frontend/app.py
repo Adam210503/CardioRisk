@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import requests
+import joblib
 
 # ─────────────────────────────────────────────
 # Page config — must be first Streamlit call
@@ -291,6 +292,19 @@ div[data-testid="stButton"] > button:hover {
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
+# Cached Model Loader (Optimized Native Fallback)
+# ─────────────────────────────────────────────
+@st.cache_resource
+def load_native_model_brain():
+    try:
+        # Attempts to open serialized sklearn model bundle sit together with repository paths
+        return joblib.load("ml/models/optimized_heart_disease_model.pkl")
+    except Exception as e:
+        return None
+
+local_pipeline_brain = load_native_model_brain()
+
+# ─────────────────────────────────────────────
 # Sidebar — clinical inputs
 # ─────────────────────────────────────────────
 with st.sidebar:
@@ -392,17 +406,17 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# Inference + results (Optimized Single Endpoint Handler)
+# Inference Execution Logic Block
 # ─────────────────────────────────────────────
 BACKEND_URL = "http://localhost:8000/predict"
 
+# Construct core DataFrame containing names matching original training schema exactly
 input_data = pd.DataFrame(
     [[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]],
     columns=['age','sex','cp','trestbps','chol','fbs','restecg','thalach','exang','oldpeak','slope','ca','thal']
 )
 
 if analyse:
-    # Package the raw inputs into a clean JSON payload matching your Pydantic Schema
     payload = {
         "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
         "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
@@ -410,36 +424,43 @@ if analyse:
     }
     
     try:
-        # Route the request to the containerized FastAPI service (used during local compose testing)
+        # Route 1: Query decoupled FastAPI microservice container
         response = requests.post(BACKEND_URL, json=payload, timeout=2)
         result = response.json()
         
-        # Populate variables from the live backend API response layer
         prediction = result["severity_class"]
         probabilities = np.array(result["probabilities"])
         max_prob = probabilities[prediction]
         st.success("Connected to live FastAPI backend container over network bridge!")
         
     except requests.exceptions.ConnectionError:
-        # FALLBACK: Keep the HTTPS cloud prototype fully functional without throwing an error
-        st.warning("⚠️ Local FastAPI container offline. Running in cloud-optimized Demo Mode using pre-loaded parameters.")
-        
-        # Intelligent structural simulation logic: Higher ST depression & calcium score scales up severity
-        if oldpeak >= 2.0 or ca >= 2 or thal == 7:
-            prediction = 3  # Severe Disease
-            probabilities = np.array([0.08, 0.12, 0.18, 0.48, 0.14])
-        elif cp == 4 and thalach < 120:
-            prediction = 2  # Moderate Narrowing
-            probabilities = np.array([0.15, 0.20, 0.45, 0.15, 0.05])
-        else:
-            prediction = 0  # Low Risk / No Disease
-            probabilities = np.array([0.76, 0.12, 0.07, 0.04, 0.01])
+        # Route 2: Fallback to evaluating the native model artifact loaded in app memory
+        if local_pipeline_brain is not None:
+            st.info("ℹ️ Local API endpoint offline. Evaluating prediction vectors via direct Scikit-Learn runtime.")
             
-        max_prob = probabilities[prediction]
+            # Run inference directly using the unified pipeline object
+            prediction = int(local_pipeline_brain.predict(input_data)[0])
+            probabilities = local_pipeline_brain.predict_proba(input_data)[0]
+            max_prob = probabilities[prediction]
+        else:
+            # Route 3: Hard emergency fallback metrics if .pkl is also missing from filesystem
+            st.warning("⚠️ Full System Fallback. Model artifacts unreachable. Running simulated heuristic array matrix.")
+            
+            if oldpeak >= 2.0 or ca >= 2 or thal == 7:
+                prediction = 3  
+                probabilities = np.array([0.08, 0.12, 0.18, 0.48, 0.14])
+            elif cp == 4 and thalach < 120:
+                prediction = 2  
+                probabilities = np.array([0.15, 0.20, 0.45, 0.15, 0.05])
+            else:
+                prediction = 0  
+                probabilities = np.array([0.76, 0.12, 0.07, 0.04, 0.01])
+                
+            max_prob = probabilities[prediction]
 
     col_result, col_detail = st.columns([1, 1], gap="large")
 
-    # ── Left: risk verdict ──
+    # ── Left Panel: Clinical Verdict Narrative ──
     with col_result:
         if prediction == 0:
             css_cls   = "result-low"
@@ -474,7 +495,6 @@ if analyse:
         </div>
         """, unsafe_allow_html=True)
 
-        # Confidence metric printouts
         st.markdown(f"""
         <div style='font-size:12px; color:#64748b; margin-top:-8px; margin-bottom:16px;'>
             Model confidence: <strong style='color:#0f172a; font-family:DM Mono,monospace;'>{max_prob:.1%}</strong>
@@ -482,7 +502,6 @@ if analyse:
         </div>
         """, unsafe_allow_html=True)
 
-        # Clinical flags display
         st.markdown("<div class='section-label'>Clinical Flags</div>", unsafe_allow_html=True)
         flags = [
             ("Chest pain type", cp_labels[cp], cp in [3, 4]),
@@ -506,7 +525,7 @@ if analyse:
         flag_html += "</div>"
         st.markdown(flag_html, unsafe_allow_html=True)
 
-    # ── Right: probability distribution breakdown ──
+    # ── Right Panel: Probability Distribution Metrics ──
     with col_detail:
         st.markdown("<div class='section-label'>Class Probability Distribution</div>", unsafe_allow_html=True)
 
@@ -548,7 +567,6 @@ if analyse:
         </table>
         """, unsafe_allow_html=True)
 
-        # Structural indicators summary grid
         st.markdown("<br><div class='section-label'>Structural Indicators</div>", unsafe_allow_html=True)
         thal_labels = {3:"Normal", 6:"Fixed Defect", 7:"Reversible Defect"}
         slope_labels = {1:"Upsloping", 2:"Flat", 3:"Downsloping"}
@@ -572,12 +590,10 @@ if analyse:
         sf_html += "</div>"
         st.markdown(sf_html, unsafe_allow_html=True)
 
-        # Raw data frame inspector expander
         with st.expander("View raw input vector"):
             st.dataframe(input_data.T.rename(columns={0: "Value"}), use_container_width=True)
 
 else:
-    # Default landing view state before analysis submission
     st.markdown("""
     <div style='
         text-align:center;
