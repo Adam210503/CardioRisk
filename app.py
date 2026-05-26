@@ -607,3 +607,21 @@ else:
 # Inference via FastAPI Backend Connection
 # ─────────────────────────────────────────────
 BACKEND_URL = "http://backend:8000/predict"
+
+payload = {
+    "age": float(age), "sex": float(sex), "cp": float(cp), "trestbps": float(trestbps),
+    "chol": float(chol), "fbs": float(fbs), "restecg": float(restecg), "thalach": float(thalach),
+    "exang": float(exang), "oldpeak": float(oldpeak), "slope": float(slope), "ca": float(ca), "thal": float(thal)
+}
+
+if analyse:
+    try:
+        response = requests.post(BACKEND_URL, json=payload)
+        result = response.json()
+        
+        prediction = result["severity_class"]
+        probabilities = np.array(result["probabilities"])
+        max_prob = probabilities[prediction]
+        
+    except requests.exceptions.ConnectionError:
+        st.error("🚨 Container Network Disconnect! Verify that the backend service container is healthy and responding.")
