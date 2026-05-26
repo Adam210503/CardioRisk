@@ -1,37 +1,43 @@
-<div style="background: #161b22; border: 1px solid #21262d; border-radius: 10px; padding: 18px; margin-bottom: 20px; font-family: 'SF Mono', 'Fira Code', monospace; display: flex; flex-direction: column; align-items: center;">
+<div style="background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 24px; margin-bottom: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">
 
-  <div style="width: 100%; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #8b949e; margin-bottom: 14px; font-family: system-ui, sans-serif;">System architecture</div>
-
-  <div style="text-align: center; margin-bottom: 10px;">
-    <div style="font-size: 10px; color: #3fb950; letter-spacing: 0.06em; margin-bottom: 4px;">[ LAYER 1: DATA PIPELINE & TRAINING ]</div>
-    <div style="font-size: 11px; color: #c9d1d9;">UCI Dataset → SMOTE (k=2) → CalibratedCV → .pkl binary</div>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+    <h3 style="margin: 0; color: #c9d1d9; font-size: 14px; text-transform: uppercase; letter-spacing: 0.15em;">Deployment Pipeline</h3>
+    <span style="font-size: 10px; color: #8b949e; background: #161b22; padding: 2px 8px; border-radius: 4px; border: 1px solid #30363d;">High Availability</span>
   </div>
 
-  <div style="width: 1px; height: 12px; background: #484f58; margin: 4px 0;"></div>
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+    
+    <div style="width: 100%; border: 1px solid #21262d; border-radius: 8px; padding: 12px; background: #161b22;">
+      <div style="font-size: 10px; color: #3fb950; font-weight: bold; margin-bottom: 4px;">[01] DATA & TRAINING</div>
+      <div style="font-size: 11px; color: #8b949e;">UCI Dataset → SMOTE → CalibratedCV → <span style="color: #ffa657;">Artifact (.pkl)</span></div>
+    </div>
 
-  <div style="width: 100%; max-width: 500px; margin-bottom: 10px;">
-    <div style="font-size: 10px; color: #58a6ff; letter-spacing: 0.06em; margin-bottom: 4px; text-align: center;">[ LAYER 2: DECOUPLED DEPLOYMENT ]</div>
-    <div style="border: 1px solid #30363d; border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
-      <div style="background: #0d1117; border: 1px solid #21262d; padding: 8px; border-radius: 6px;">
-        <div style="font-size: 10px; color: #8b949e;">Frontend</div>
-        <div style="font-size: 12px; color: #ff7b72; font-weight: 600;">Streamlit</div>
-      </div>
-      <div style="font-size: 10px; color: #8b949e; text-align: center;">network<br>bridge</div>
-      <div style="background: #0d1117; border: 1px solid #21262d; padding: 8px; border-radius: 6px;">
-        <div style="font-size: 10px; color: #8b949e;">Backend</div>
-        <div style="font-size: 12px; color: #58a6ff; font-weight: 600;">FastAPI</div>
+    <div style="height: 16px; width: 1px; background: #30363d;"></div>
+
+    <div style="width: 100%; border: 1px solid #30363d; border-radius: 8px; padding: 12px; background: #0d1117;">
+      <div style="font-size: 10px; color: #58a6ff; font-weight: bold; margin-bottom: 8px;">[02] DOCKERIZED INFRASTRUCTURE</div>
+      <div style="display: flex; align-items: center; justify-content: space-around; gap: 10px;">
+        <div style="text-align: center;">
+          <div style="font-size: 14px;">🐳</div>
+          <div style="font-size: 10px; color: #c9d1d9;">Streamlit</div>
+        </div>
+        <div style="font-size: 18px; color: #484f58;">➔</div>
+        <div style="text-align: center;">
+          <div style="font-size: 14px;">⚡</div>
+          <div style="font-size: 10px; color: #c9d1d9;">FastAPI</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div style="display: flex; flex-direction: column; align-items: center; margin: 4px 0;">
-    <div style="width: 1px; height: 8px; background: #484f58;"></div>
-    <span style="font-size: 9px; color: #8b949e; font-family: system-ui, sans-serif;">▼ if connection fails</span>
-  </div>
+    <div style="display: flex; align-items: center; gap: 8px; color: #d2a8ff; font-size: 9px; font-weight: bold; padding: 4px 0;">
+      <div style="height: 1px; width: 40px; background: #d2a8ff;"></div>
+      FALLBACK PATH (LOCAL MEMORY)
+      <div style="height: 1px; width: 40px; background: #d2a8ff;"></div>
+    </div>
 
-  <div style="text-align: center;">
-    <div style="font-size: 10px; color: #d2a8ff; letter-spacing: 0.06em; margin-bottom: 4px;">[ LAYER 3: CLOUD FALLBACK ]</div>
-    <div style="font-size: 11px; color: #c9d1d9;">Streamlit Cloud ↔ Direct memory load ↔ .pkl from GitHub</div>
+    <div style="width: 100%; border: 1px solid #21262d; border-radius: 8px; padding: 12px; background: #161b22;">
+      <div style="font-size: 10px; color: #d2a8ff; font-weight: bold; margin-bottom: 4px;">[03] CLOUD RUNTIME</div>
+      <div style="font-size: 11px; color: #c9d1d9;">Streamlit Cloud → Direct .pkl Inference</div>
+    </div>
   </div>
-
 </div>
